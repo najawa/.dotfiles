@@ -3,8 +3,9 @@
 export DEBIAN_FRONTEND=noninteractive
 set -e
 
-sudo apt update
-sudo -E apt install -y i3 wget curl git tmux rxvt-unicode feh \
+sudo add-apt-repository ppa:shutter/ppa
+sudo apt-update update
+sudo -E apt-update install -y i3 wget curl git tmux rxvt-unicode feh shutter \
 	silversearcher-ag build-essential tcl libqt4-dev libqtwebkit-dev \
         scrot redshift xautolock xclip libssl-dev zlib1g-dev xclip \
         acpi scrot nmap libreadline-dev tzdata rofi
