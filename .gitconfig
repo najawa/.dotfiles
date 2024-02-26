@@ -1,5 +1,5 @@
 [core]
-	editor = nvim
+	editor = nano
 	excludesfile = ~/.gitignore_global
 [push]
 	default = simple
@@ -9,9 +9,10 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 [merge]
-  tool = nvim
-[mergetool "nvim"]
-  cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+    tool = opendiff
+[mergetool "opendiff"]
+    cmd = opendiff \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+    trustExitCode = true
 [commit]
 	verbose = true
 [pull]
