@@ -18,7 +18,6 @@ code
 ctags
 cups
 dhcpcd
-discord
 docker
 docker-compose
 dunst
