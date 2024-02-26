@@ -20,8 +20,6 @@ brew bundle --file=- <<EOF
   brew "koekeishiya/formulae/skhd"
   brew "koekeishiya/formulae/yabai"
 
-  cask "discord"
-
   brew "gh"
 
   brew "postgres", restart_service: :changed
