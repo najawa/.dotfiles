@@ -32,6 +32,6 @@ alias emacs='emacs -nw'
 
 alias a="alias | fzf"
 
-eval $(thefuck --alias qwer)
-
 [ -f ~/.dotfiles/.octanecoffeerc ] && source ~/.dotfiles/.octanecoffeerc
+
+eval $(thefuck --alias qwer)

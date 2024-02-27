@@ -1,5 +1,5 @@
 # Simply shortcuts for managing my machine at OctaneCoffee
 # These shortcuts DO NOT contain any intellectual property, business product, or business ideas
 
-alias oc="cd ~/OctaneCoffee"
-alias ocr="cd ~/OctaneCoffee/repositories"
+alias oc='cd ~/OctaneCoffee'
+alias ocr='cd ~/OctaneCoffee/repositories'
