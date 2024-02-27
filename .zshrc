@@ -37,3 +37,7 @@ source $ZSH/oh-my-zsh.sh
 # if [[ -f ~/.zsh_prompt ]]; then
 #   . ~/.zsh_prompt
 # fi
+
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
