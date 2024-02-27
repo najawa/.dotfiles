@@ -127,8 +127,6 @@ alias prettyjson='python -m json.tool'
 # Open chrome from the command line
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 
-alias python="/usr/local/Cellar/python@3.7/3.7.9_2/Frameworks/Python.framework/Versions/3.7/bin/python3.7"
-
 alias starwars="telnet towel.blinkenlights.nl"
 alias h="ping 8.8.8.8"
 
@@ -189,3 +187,6 @@ alias a="alias | fzf"
 [ -f ~/.dotfiles/.octanecoffeerc ] && source ~/.dotfiles/.octanecoffeerc
 
 eval $(thefuck --alias qwer)
+
+# Add pyenv shims to brew to supress homebrew errors
+alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
