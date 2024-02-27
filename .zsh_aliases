@@ -1,3 +1,157 @@
+##########################################
+#### NATHANIEL WADDELL ~ Bash Profile ####
+##########################################
+
+### Terminal Tweaks
+## Colorize the ls output ##
+export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+
+## Use a long listing format ##
+alias ll='ls -la'
+
+## Show hidden files ##
+alias l.='ls -d .*'
+
+alias c="clear"
+
+## get rid of command not found ##
+alias cd..='cd ..'
+
+## a quick way to get out of current directory ##
+alias ..='cd ..'
+alias ...='cd ../../../'
+alias ....='cd ../../../../'
+alias .....='cd ../../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+
+## Colorize the grep command output for ease of use (good for log files)##
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+## Always load business calc with math support ##
+alias bc='bc -l'
+
+## Allow yourself to make /dir/dir/dir and auto make parent dir's ##
+alias mkdir='mkdir -pv'
+
+## Make mount command output pretty and human readable format ##
+alias mount='mount |column -t'
+
+## Miscellaneous Shortcuts ##
+alias his='history'
+alias j='jobs -l'
+
+if [ -n "$BASH_VERSION" ]; then
+    # Rainbow _Bash_ Profile
+    export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]\u\[$(tput setaf 2)\]@\[$(tput setaf 4)\]\h \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
+fi
+
+### Functions
+# Run any command after (log), and it will save it to a text file, and open the file on completion
+log() {
+    "$@" > log.txt; sublime log.txt
+}
+alias log=log
+
+# Copy the output of the following command to the clipboard
+copy() {
+    "$@" | tr -d '\n' | pbcopy;
+    echo $("$@")
+}
+alias copy=copy
+
+alias ip="ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2"
+
+function whereis() {
+  curl -s http://api.db-ip.com/v2/free/$1 | python -m json.tool
+}
+#Path copy - escapes spaces
+pwc() {
+     printf "%q\n" "$(pwd)" | tr -d '\n'  | pbcopy
+    command=$( pbpaste)
+    output='Copied: "';
+    output2='" to the clipboard!'
+    echo "$output $command $output2";
+}
+alias pwc=pwc
+
+#Ping until host is up, then ssh
+wssh() {
+    address=$(cut -d "@" -f 2 <<< "$@")
+    [ $address ] && PHOST=$address || return 1;
+    until ping -c1 -W2 $PHOST
+    do sleep 5s; done;
+    clear
+    echo "$PHOST is online. Establishing an ssh connection using $1"
+    ssh $1
+}
+alias wssh=wssh
+
+# Rip emails from a website
+erip() {
+    echo "Ripping emails from $1"
+    curl -sb -H $1 | grep -i -o "[A-Z0-9._%+-]\+@[A-Z0-9.-]\+\.[A-Z]\{2,4\}"
+}
+alias erip=erip
+
+# if user is not root, pass all the following commands via sudo #
+if [ $UID -ne 0 ]; then
+    alias shutdown='sudo shutdown now'
+    alias reboot='sudo reboot'
+    alias update='sudo homebrew update'
+fi
+
+# This can be done easier with a shortcut: cmd+shift+.
+alias showfiles="defaults write com.apple.finder AppleShowAllFiles YES;echo 'Hidden files are now visible'"
+alias hidefiles="defaults write com.apple.finder AppleShowAllFiles NO; echo 'Hidden files are NO LONGER visible'"
+
+# Get path variables
+alias path='echo -e ${PATH//:/\\n}'
+# Get current time
+alias now='date +"%T"'
+alias nowtime=now
+# Get full date
+alias nowdate='date +"%d-%m-%Y"'
+# Show open ports
+alias ports='netstat -tulanp'
+# Resume wget by default
+alias wget='wget -c'
+# Standardize Disk Usage Output
+alias df='df -H'
+# Easy rewriting of the ~/.bash_profile
+alias bashrebuild='truncate -s 0 ~/.bash_profile;nano ~/.bash_profile;source ~/.bash_profile'
+alias prettyjson='python -m json.tool'
+# Open chrome from the command line
+alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+
+alias python="/usr/local/Cellar/python@3.7/3.7.9_2/Frameworks/Python.framework/Versions/3.7/bin/python3.7"
+
+alias starwars="telnet towel.blinkenlights.nl"
+alias h="ping 8.8.8.8"
+
+# Unix
+alias ll="ls -al"
+alias ln="ln -v"
+alias mkdir="mkdir -p"
+alias e="$EDITOR"
+alias v="$VISUAL"
+alias c="clear"
+
+# Git-related
+alias g="git"
+alias gs="clear ; git status -sb"
+alias ga="clear ; git add -p"
+alias gca="git commit --amend"
+alias gdc="git diff --cached"
+
+# Tooling
+alias m="make"
+alias k="kubectl"
+alias bazel="bazelisk"
+
 # additional git aliases
 alias gfcu='git fetch upstream && git checkout upstream/main'
 alias gfru='git fetch upstream && git rebase -i upstream/main'
