@@ -13,11 +13,12 @@ if [ -d /opt/asdf-vm ]; then
   ASDF_DIR=/opt/asdf-vm
 fi
 
+export FZF_BASE=/opt/homebrew/bin/fzf
 ZSH_THEME="robbyrussell"
 HYPHEN_INSENSITIVE="true"
 CASE_SENSITIVE="false"
 COMPLETION_WAITING_DOTS="true"
-ZSH_TMUX_AUTOSTART=true
+ZSH_TMUX_AUTOSTART=false
 ZSH_TMUX_UNICODE=true
 HIST_STAMPS="yyyy-mm-dd"
 DISABLE_UPDATE_PROMPT="true"
@@ -30,3 +31,9 @@ plugins=(git github rails bundler terraform tmux tmuxinator asdf docker docker-c
 source $ZSH/oh-my-zsh.sh
 
 [ -f ~/.zsh_aliases ] && source ~/.zsh_aliases
+
+# An experimental way to color zsh terminal parts. Not as nice as the simpler bash ones :(
+# PS1_DEBUG=false
+# if [[ -f ~/.zsh_prompt ]]; then
+#   . ~/.zsh_prompt
+# fi

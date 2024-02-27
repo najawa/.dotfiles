@@ -21,6 +21,8 @@ brew bundle --file=- <<EOF
   brew "koekeishiya/formulae/yabai"
 
   brew "gh"
+  brew "thefuck"
+  brew "cmatrix"
 
   brew "postgres", restart_service: :changed
   brew "redis", restart_service: :changed
