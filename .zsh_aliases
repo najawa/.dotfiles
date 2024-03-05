@@ -190,3 +190,6 @@ eval $(thefuck --alias qwer)
 
 # Add pyenv shims to brew to supress homebrew errors
 alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
+
+# Git Commit Files
+alias gcf ="git diff-tree --no-commit-id --name-only $1"
