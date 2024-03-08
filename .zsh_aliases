@@ -193,3 +193,8 @@ alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
 
 # Git Commit Files
 alias gcf="git diff-tree --no-commit-id --name-only $1"
+
+# GitLab Token
+if [ -d ~/.dotfiles/keys/GITLAB_TOKEN ]; then
+    source ~/.dotfiles/keys/GITLAB_TOKEN
+fi
