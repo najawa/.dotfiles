@@ -2,3 +2,5 @@
 !.config/nvim/init.lua
 !.config/nvim/after/
 !.config/nvim/pack/
+keys/*
+!keys/.gitkeep
