@@ -1,7 +1,14 @@
 # najawa/.dotfiles
 
-This is a fork of grepsedawk/.dotfiles
+This is a fork of najawa/.dotfiles
 This is a configuration/dotfile repository for me to fast track rebuilding my development environment.
+
+## Un-added pre-steps for Ubuntu and Pop_OS
+
+```bash'
+sudo apt-get update
+sudo apt-get install libyaml-dev
+```
 
 ## Usage
 
@@ -12,7 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/najawa/.dotfiles/main/install | bas
 
 Local:
 ```bash
-chmox +x install
+chmod +x install
 ./install
 ```
 

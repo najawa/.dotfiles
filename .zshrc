@@ -13,7 +13,8 @@ if [ -d /opt/asdf-vm ]; then
   ASDF_DIR=/opt/asdf-vm
 fi
 
-export FZF_BASE=/opt/homebrew/bin/fzf
+#export FZF_BASE=/path/to/fzf/install/dir
+#export FZF_BASE=/opt/homebrew/bin/fzf
 ZSH_THEME="robbyrussell"
 HYPHEN_INSENSITIVE="true"
 CASE_SENSITIVE="false"
@@ -41,13 +42,20 @@ source $ZSH/oh-my-zsh.sh
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+# Usage example of pyenv virtualenv:
+# pyenv virtualenv 3.9.7 myenv39
+# pyenv virtualenv 3.12.0 myenv312
+eval "$(pyenv virtualenv-init -)"
 
 # Created by `pipx` on 2024-02-27 18:23:19
 export PATH="$PATH:/Users/nathanielwaddell/.local/bin"
 
 # Herd injected NVM configuration
-export NVM_DIR="/Users/nathanielwaddell/Library/Application Support/Herd/config/nvm"
+
+export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 
 [[ -f "/Applications/Herd.app/Contents/Resources/config/shell/zshrc.zsh" ]] && builtin source "/Applications/Herd.app/Contents/Resources/config/shell/zshrc.zsh"
 
@@ -56,8 +64,23 @@ export HERD_PHP_83_INI_SCAN_DIR="/Users/nathanielwaddell/Library/Application Sup
 
 
 # Herd injected PHP binary.
-export PATH="/Users/nathanielwaddell/Library/Application Support/Herd/bin/":$PATH
+# export PATH="/Users/nathanielwaddell/Library/Application Support/Herd/bin/":$PATH
+# TODO An ubuntu binary
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+### MOTD ####
+echo " "
+echo " ███╗   ██╗ █████╗      ██╗ █████╗ ██╗    ██╗ █████╗ "
+echo " ████╗  ██║██╔══██╗     ██║██╔══██╗██║    ██║██╔══██╗"
+echo " ██╔██╗ ██║███████║     ██║███████║██║ █╗ ██║███████║"
+echo " ██║╚██╗██║██╔══██║██   ██║██╔══██║██║███╗██║██╔══██║"
+echo " ██║ ╚████║██║  ██║╚█████╔╝██║  ██║╚███╔███╔╝██║  ██║"
+echo " ╚═╝  ╚═══╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝"
+echo " "
