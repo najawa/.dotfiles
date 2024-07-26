@@ -164,7 +164,7 @@ alias air='asdf install ruby "`cat .ruby-version`"'
 alias copy='xclip -selection c'
 alias paste='xclip -out -selection c'
 
-# easy grepsedawk things
+# easy najawa things
 getcol() {
   num=$(expr $1 + 0)
   awk "{ print \$$num }"

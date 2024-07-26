@@ -1,4 +1,4 @@
-name: Push Docker Image to grepsedawk/dotfiles
+name: Push Docker Image to najawa/dotfiles
 on:
   push:
     branches:
@@ -15,7 +15,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: grepsedawk/dotfiles
+          images: najawa/dotfiles
           flavor: |
             latest=true
 

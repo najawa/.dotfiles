@@ -2,14 +2,14 @@ FROM archlinux:latest
 
 RUN pacman -Syy --needed --noconfirm sudo
 
-RUN useradd --create-home grepsedawk
-RUN echo "grepsedawk ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN useradd --create-home najawa
+RUN echo "najawa ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-COPY . /home/grepsedawk/.dotfiles
-WORKDIR /home/grepsedawk/.dotfiles
-RUN chown -R grepsedawk:grepsedawk .
+COPY . /home/najawa/.dotfiles
+WORKDIR /home/najawa/.dotfiles
+RUN chown -R najawa:najawa .
 
-USER grepsedawk
+USER najawa
 
 RUN mkdir $HOME/.ssh
 

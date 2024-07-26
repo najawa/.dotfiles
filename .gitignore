@@ -4,3 +4,7 @@
 !.config/nvim/pack/
 keys/*
 !keys/.gitkeep
+.DS_Store
+Thumbs.db
+.idea
+.vscode
