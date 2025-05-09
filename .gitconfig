@@ -25,3 +25,6 @@
 	autoStash = true
 [init]
 	defaultBranch = main
+[user]
+	name = Nate Waddell
+	email = contact@nathanielwaddell.com
