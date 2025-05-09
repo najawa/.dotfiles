@@ -43,21 +43,23 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 
 # Created by `pipx` on 2024-02-27 18:23:19
-export PATH="$PATH:/Users/nathanielwaddell/.local/bin"
+export PATH="$PATH:~/.local/bin"
 
-# Herd injected NVM configuration
-export NVM_DIR="/Users/nathanielwaddell/Library/Application Support/Herd/config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 [[ -f "/Applications/Herd.app/Contents/Resources/config/shell/zshrc.zsh" ]] && builtin source "/Applications/Herd.app/Contents/Resources/config/shell/zshrc.zsh"
 
 # Herd injected PHP 8.3 configuration.
-export HERD_PHP_83_INI_SCAN_DIR="/Users/nathanielwaddell/Library/Application Support/Herd/config/php/83/"
+export HERD_PHP_83_INI_SCAN_DIR="~/Library/Application Support/Herd/config/php/83/"
 
 
 # Herd injected PHP binary.
-export PATH="/Users/nathanielwaddell/Library/Application Support/Herd/bin/":$PATH
+export PATH="~/Library/Application Support/Herd/bin/":$PATH
 
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+
+export FZF_BASE=/path/to/fzf/install/dir

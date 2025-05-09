@@ -31,4 +31,4 @@ if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     exec startx;
 fi
 # Created by `pipx` on 2024-02-27 18:23:19
-export PATH="$PATH:/Users/nathanielwaddell/.local/bin"
+export PATH="$PATH:~/.local/bin"

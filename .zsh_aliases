@@ -198,3 +198,5 @@ alias gcf="git diff-tree --no-commit-id --name-only $1"
 if [ -d ~/.dotfiles/keys/GITLAB_TOKEN ]; then
     source ~/.dotfiles/keys/GITLAB_TOKEN
 fi
+
+cat ~/.dotfiles/motd/techjoy-motd.sh | lolcat
