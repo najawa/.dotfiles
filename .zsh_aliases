@@ -2,6 +2,8 @@
 #### NATHANIEL WADDELL ~ Bash Profile ####
 ##########################################
 
+export AWS_THEME_ENABLE_STS=1
+export AWS_THEME_STS_PERIOD=30
 source ~/.dotfiles/zsh-aws-borders.sh
 
 ### Terminal Tweaks
