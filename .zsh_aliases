@@ -2,6 +2,8 @@
 #### NATHANIEL WADDELL ~ Bash Profile ####
 ##########################################
 
+source ~/.dotfiles/zsh-aws-borders.sh
+
 ### Terminal Tweaks
 ## Colorize the ls output ##
 export CLICOLOR=1
@@ -80,13 +82,37 @@ alias pwc=pwc
 
 #Ping until host is up, then ssh
 wssh() {
-    address=$(cut -d "@" -f 2 <<< "$@")
-    [ $address ] && PHOST=$address || return 1;
-    until ping -c1 -W2 $PHOST
-    do sleep 5s; done;
+    local target="$1"
+    local address
+    local config="$HOME/.ssh/config"
+
+    # Detect if the argument contains an @ (user@host) or is just an alias
+    if [[ "$target" == *@* ]]; then
+        # Use the host after @
+        address="${target#*@}"
+    else
+        # Assume alias. Parse ssh config for HostName.
+        address=$(awk -v host="$target" '
+            $1 == "Host" && $2 == host {inhost=1}
+            inhost && $1 == "HostName" {print $2; exit}
+            $1 == "Host" && $2 != host {inhost=0}
+        ' "$config")
+
+        if [ -z "$address" ]; then
+            echo "Could not resolve HostName for alias '$target' in $config"
+            return 1
+        fi
+    fi
+
+    # Wait for ping response
+    until ping -c1 -W2 "$address" >/dev/null 2>&1; do
+        echo "Waiting for $address to respond to ping..."
+        sleep 5s
+    done
+
     clear
-    echo "$PHOST is online. Establishing an ssh connection using $1"
-    ssh $1
+    echo "$address is online. Establishing an ssh connection using $target"
+    ssh "$target"
 }
 alias wssh=wssh
 
@@ -199,4 +225,19 @@ if [ -d ~/.dotfiles/keys/GITLAB_TOKEN ]; then
     source ~/.dotfiles/keys/GITLAB_TOKEN
 fi
 
+# GitHub Token
+if [ -d ~/.dotfiles/keys/GITHUB_TOKEN ]; then
+    source ~/.dotfiles/keys/GITHUB_TOKEN
+fi
+
+# AWS Switcher
+if [ -f ~/.dotfiles/keys/AWS_SWITCHER ]; then
+    source ~/.dotfiles/keys/AWS_SWITCHER
+fi
+
+uptime | awk '{print "Uptime: "$3" "$4" "$5}'
+LOCAL_IP=$(osascript -e "IPv4 address of (system info)")
+echo $LOCAL_IP
 cat ~/.dotfiles/motd/techjoy-motd.sh | lolcat
+
+alias corig='find . -type f -name "*.orig" -delete'

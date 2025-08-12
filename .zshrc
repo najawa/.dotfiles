@@ -63,3 +63,15 @@ export PATH="~/Library/Application Support/Herd/bin/":$PATH
 source <(ng completion script)
 
 export FZF_BASE=/path/to/fzf/install/dir
+
+### Go environment ###########################################################
+export GOPATH="$HOME/go"
+export GOBIN="$GOPATH/bin"
+export PATH="$PATH:/opt/homebrew/opt/go/libexec/bin:$GOBIN"
+### End Go environment #######################################################
+export PATH="/Users/nate/.config/herd-lite/bin:$PATH"
+export PHP_INI_SCAN_DIR="/Users/nate/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+
+export DOCKER_BUILDKIT=1
+
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
