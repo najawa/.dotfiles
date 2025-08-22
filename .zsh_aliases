@@ -243,3 +243,7 @@ echo $LOCAL_IP
 cat ~/.dotfiles/motd/techjoy-motd.sh | lolcat
 
 alias corig='find . -type f -name "*.orig" -delete'
+
+fc() {
+  grep "$1" ~/.zsh_history
+}
