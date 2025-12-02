@@ -4,3 +4,18 @@
 !.config/nvim/pack/
 keys/*
 !keys/.gitkeep
+
+# Backup files
+*.bak
+*~
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+*.cache
