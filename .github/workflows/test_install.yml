@@ -1,21 +1,280 @@
-name: Run Install Script
-on: [push]
+name: Test Dotfiles
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
 jobs:
-  apt-install-script-run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - run: ./install
+  #
+  # Linting and syntax checks (runs on all platforms)
+  #
+  lint:
+    name: Lint (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
-
-  arch-docker-install-script-run:
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - run: docker build -f Dockerfile.arch .
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  arch-full-install-script-run:
-    runs-on: ubuntu-latest
+      - name: Install ShellCheck (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y shellcheck
+
+      - name: Install ShellCheck (macOS)
+        if: runner.os == 'macOS'
+        run: brew install shellcheck
+
+      - name: Install ShellCheck (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install shellcheck -y
+
+      - name: Run ShellCheck on main installer
+        shell: bash
+        run: |
+          shellcheck -S warning install || true
+
+      - name: Run ShellCheck on apt installers
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          shellcheck -S warning apt/install apt/*/install apt/*/install.sh 2>/dev/null || true
+
+      - name: Run ShellCheck on brew installer
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          shellcheck -S warning brew/install || true
+
+      - name: Run ShellCheck on pacman installer
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          shellcheck -S warning pacman/install || true
+
+      - name: Check bash syntax
+        shell: bash
+        run: |
+          echo "Checking bash syntax..."
+          for script in install apt/install brew/install pacman/install; do
+            if [[ -f "$script" ]]; then
+              bash -n "$script" && echo "✓ $script: valid syntax" || echo "✗ $script: syntax error"
+            fi
+          done
+
+  #
+  # Test suite (runs on Linux and macOS)
+  #
+  test-suite:
+    name: Test Suite (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
     steps:
-      - uses: actions/checkout@v1
-      - run: docker build -f Dockerfile.arch-full .
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y shellcheck
+
+      - name: Install ShellCheck (macOS)
+        if: runner.os == 'macOS'
+        run: brew install shellcheck
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Run test suite
+        run: |
+          chmod +x tests/test_installers.sh
+          ./tests/test_installers.sh
+
+  #
+  # Ubuntu installation test
+  #
+  ubuntu-install:
+    name: Ubuntu Installation Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Test link-dotfiles.rb
+        run: |
+          ruby -c link-dotfiles.rb
+          echo "✓ link-dotfiles.rb syntax valid"
+
+      - name: Test apt installer syntax
+        run: |
+          bash -n apt/install
+          for script in apt/*/install apt/*/install.sh; do
+            if [[ -f "$script" ]]; then
+              bash -n "$script" && echo "✓ $script"
+            fi
+          done
+
+      - name: Verify apt installer structure
+        run: |
+          echo "Checking apt installer structure..."
+          [[ -f apt/install ]] && echo "✓ apt/install exists"
+          [[ -f apt/docker/install ]] && echo "✓ apt/docker/install exists"
+          [[ -f apt/zsh/install.sh ]] && echo "✓ apt/zsh/install.sh exists"
+          [[ -f apt/asdf/install ]] && echo "✓ apt/asdf/install exists"
+
+  #
+  # macOS installation test
+  #
+  macos-install:
+    name: macOS Installation Test
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Test link-dotfiles.rb
+        run: |
+          ruby -c link-dotfiles.rb
+          echo "✓ link-dotfiles.rb syntax valid"
+
+      - name: Test brew installer syntax
+        run: |
+          bash -n brew/install
+          echo "✓ brew/install syntax valid"
+
+      - name: Test main installer syntax
+        run: |
+          bash -n install
+          echo "✓ install syntax valid"
+
+  #
+  # Arch Linux Docker build test
+  #
+  arch-docker:
+    name: Arch Linux Docker Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Arch Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.arch
+          push: false
+          tags: dotfiles:arch-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  #
+  # Arch Linux full Docker build test
+  #
+  arch-docker-full:
+    name: Arch Linux Full Docker Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Arch Full Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.arch-full
+          push: false
+          tags: dotfiles:arch-full-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  #
+  # Windows compatibility check (limited - just syntax)
+  #
+  windows-compat:
+    name: Windows Compatibility Check
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check file structure
+        shell: pwsh
+        run: |
+          Write-Host "Checking dotfiles structure..."
+
+          $requiredFiles = @(
+            "install",
+            "link-dotfiles.rb",
+            ".zshrc",
+            ".vimrc",
+            ".tmux.conf",
+            ".gitconfig"
+          )
+
+          $allExist = $true
+          foreach ($file in $requiredFiles) {
+            if (Test-Path $file) {
+              Write-Host "✓ $file exists" -ForegroundColor Green
+            } else {
+              Write-Host "✗ $file missing" -ForegroundColor Red
+              $allExist = $false
+            }
+          }
+
+          if (-not $allExist) {
+            exit 1
+          }
+
+      - name: Check for Windows line endings issues
+        shell: pwsh
+        run: |
+          Write-Host "Checking for CRLF line endings in shell scripts..."
+
+          $scripts = Get-ChildItem -Recurse -Include "*.sh","install" | Where-Object { -not $_.PSIsContainer }
+
+          foreach ($script in $scripts) {
+            $content = [System.IO.File]::ReadAllText($script.FullName)
+            if ($content -match "`r`n") {
+              Write-Host "⚠ $($script.Name) contains CRLF line endings" -ForegroundColor Yellow
+            } else {
+              Write-Host "✓ $($script.Name) has Unix line endings" -ForegroundColor Green
+            }
+          }

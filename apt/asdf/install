@@ -1,15 +1,36 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
+#
+# ASDF version manager installer
+#
 
-if [ ! -d ~/.asdf ]; then
-  git clone git@github.com:asdf-vm/asdf.git ~/.asdf --branch v0.3.0 || git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.3.0
+set -euo pipefail
+
+ASDF_DIR="${HOME}/.asdf"
+
+echo "==> Installing ASDF..."
+
+if [[ ! -d "${ASDF_DIR}" ]]; then
+  git clone https://github.com/asdf-vm/asdf.git "${ASDF_DIR}" --branch v0.14.0 || \
+    git clone git@github.com:asdf-vm/asdf.git "${ASDF_DIR}" --branch v0.14.0
 fi
 
-. $HOME/.asdf/asdf.sh
+# shellcheck source=/dev/null
+source "${ASDF_DIR}/asdf.sh"
 
-asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
-asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+echo "==> Adding ASDF plugins..."
+asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git || true
+asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
 
-latest_ruby=$(asdf list-all ruby | ag "^[2-9].[0-9].[0-9]$" | tail -1)
+echo "==> Installing latest Ruby..."
+# Match Ruby versions like 3.2.0, 3.3.0, etc.
+latest_ruby=$(asdf list-all ruby | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | tail -1)
 
-asdf install ruby $latest_ruby
-asdf global ruby $latest_ruby
+if [[ -n "${latest_ruby}" ]]; then
+  asdf install ruby "${latest_ruby}"
+  asdf global ruby "${latest_ruby}"
+  echo "==> Ruby ${latest_ruby} installed and set as global"
+else
+  echo "Warning: Could not determine latest Ruby version"
+fi
+
+echo "==> ASDF installation complete!"

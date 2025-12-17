@@ -1,27 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Main apt installer for Debian/Ubuntu systems
+#
 
-set -e
+set -euo pipefail
 
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 export DEBIAN_FRONTEND=noninteractive
 
-sudo apt update
-sudo -E apt install -y i3 wget curl git tmux rxvt-unicode feh \
+echo "==> Installing base packages..."
+sudo apt-get update
+sudo -E apt-get install -y i3 wget curl git tmux rxvt-unicode feh \
   silversearcher-ag build-essential tcl \
-  scrot redshift xautolock xclip libssl-dev zlib1g-dev xclip \
-  acpi scrot nmap libreadline-dev tzdata rofi pavucontrol \
-  compton exuberant-ctags emacs neovim
+  scrot redshift xautolock xclip libssl-dev zlib1g-dev \
+  acpi nmap libreadline-dev tzdata rofi pavucontrol \
+  picom exuberant-ctags emacs neovim zsh
 
-if [ ! -d ~/.dotfiles ]; then
-  git clone git@github.com:grepsedawk/.dotfiles.git ~/.dotfiles || git clone https://github.com/grepsedawk/.dotfiles ~/.dotfiles
+if [[ ! -d "${HOME}/.dotfiles" ]]; then
+  echo "==> Cloning dotfiles repository..."
+  git clone https://github.com/najawa/.dotfiles.git "${HOME}/.dotfiles" || \
+    git clone git@github.com:najawa/.dotfiles.git "${HOME}/.dotfiles"
 fi
 
-$SCRIPT_DIR/google-chrome/install.sh
-$SCRIPT_DIR/zsh/install.sh
-$SCRIPT_DIR/docker/install
-$SCRIPT_DIR/redis/install.sh
-$SCRIPT_DIR/thefuck/install.sh
-$SCRIPT_DIR/asdf/install
-$SCRIPT_DIR/postgresql/install.sh
-$SCRIPT_DIR/maria-db/install.sh
+echo "==> Running sub-installers..."
+"${SCRIPT_DIR}/google-chrome/install.sh"
+"${SCRIPT_DIR}/zsh/install.sh"
+"${SCRIPT_DIR}/docker/install"
+"${SCRIPT_DIR}/redis/install.sh"
+"${SCRIPT_DIR}/thefuck/install.sh"
+"${SCRIPT_DIR}/asdf/install"
+"${SCRIPT_DIR}/postgresql/install.sh"
+"${SCRIPT_DIR}/maria-db/install.sh"
+
+echo "==> apt installation complete!"

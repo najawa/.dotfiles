@@ -1,8 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Arch Linux installer using pacman/yay
+#
 
-set -e
+set -euo pipefail
 
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+DOCKER=""
+POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -21,36 +27,52 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+echo "==> Updating package database..."
 sudo pacman -Syy
 
-if ! command -v yay &> /dev/null
-then
-  echo "Installing yay"
+# Install yay AUR helper if not present
+if ! command -v yay &>/dev/null; then
+  echo "==> Installing yay AUR helper..."
   sudo pacman -S --noconfirm --needed git base-devel
   tmp_dir=$(mktemp -d)
-  git clone https://aur.archlinux.org/yay.git $tmp_dir
-  cd $tmp_dir
+  trap 'rm -rf "${tmp_dir}"' EXIT
+  git clone https://aur.archlinux.org/yay.git "${tmp_dir}"
+  cd "${tmp_dir}"
   makepkg -si --noconfirm
+  cd -
 fi
 
-
-if [[ -n "$DOCKER" ]]; then
-  PKGLIST="$SCRIPT_DIR/pkglist.docker.txt"
+# Select package list based on environment
+if [[ -n "${DOCKER}" ]]; then
+  PKGLIST="${SCRIPT_DIR}/pkglist.docker.txt"
 else
-  PKGLIST="$SCRIPT_DIR/pkglist.txt"
+  PKGLIST="${SCRIPT_DIR}/pkglist.txt"
 fi
 
-cat $PKGLIST | xargs yay -S --needed --noconfirm --removemake --batchinstall
+echo "==> Installing packages from ${PKGLIST}..."
+xargs yay -S --needed --noconfirm --removemake --batchinstall < "${PKGLIST}"
 
-sudo chsh -s `which zsh` `whoami`
+# Change default shell to zsh
+echo "==> Setting zsh as default shell..."
+sudo chsh -s "$(command -v zsh)" "$(whoami)"
 
-. /opt/asdf-vm/asdf.sh
+# Setup ASDF
+echo "==> Configuring ASDF..."
+# shellcheck source=/dev/null
+source /opt/asdf-vm/asdf.sh
 asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git || true
 asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
 
-latest_ruby=$(asdf list-all ruby | ag "^[2-9].[0-9].[0-9]$" | tail -1)
+echo "==> Installing latest Ruby..."
+latest_ruby=$(asdf list-all ruby | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | tail -1)
 
-asdf install ruby $latest_ruby
-asdf global ruby $latest_ruby
+if [[ -n "${latest_ruby}" ]]; then
+  asdf install ruby "${latest_ruby}"
+  asdf global ruby "${latest_ruby}"
+  echo "==> Ruby ${latest_ruby} installed"
+fi
 
-nvim +PlugInstall +qall
+echo "==> Installing Neovim plugins..."
+nvim +PlugInstall +qall || true
+
+echo "==> Arch Linux installation complete!"

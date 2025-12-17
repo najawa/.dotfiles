@@ -1,15 +1,22 @@
-#!/bin/sh
-# TODO: map caps lock to ctrl
-# TODO: reduce motion blur
-# TODO: keybinds for mission control pane 1234 -> option+1234
+#!/usr/bin/env bash
+#
+# macOS Homebrew installer
+#
 
-if ! command -v brew > /dev/null; then
+set -euo pipefail
+
+echo "==> Installing Homebrew packages for macOS..."
+
+# Install Homebrew if not present
+if ! command -v brew &>/dev/null; then
+  echo "==> Installing Homebrew..."
   /bin/bash -c \
-    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 brew update --force # https://github.com/Homebrew/brew/issues/1151
 
+echo "==> Installing packages via Homebrew Bundle..."
 brew bundle --file=- <<EOF
   brew "the_silver_searcher"
   brew "neovim"
@@ -24,7 +31,7 @@ brew bundle --file=- <<EOF
   brew "thefuck"
   brew "cmatrix"
 
-  brew "postgres", restart_service: :changed
+  brew "postgresql@14", restart_service: :changed
   brew "redis", restart_service: :changed
 
   brew "crystal"
@@ -33,13 +40,17 @@ brew bundle --file=- <<EOF
   brew "yarn"
 EOF
 
-
-if [ ! -d ~/.oh-my-zsh ]; then
-  git clone git@github.com:robbyrussell/oh-my-zsh.git ~/.oh-my-zsh || git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+# Install Oh-My-Zsh
+if [[ ! -d "${HOME}/.oh-my-zsh" ]]; then
+  echo "==> Installing Oh-My-Zsh..."
+  git clone https://github.com/ohmyzsh/ohmyzsh.git "${HOME}/.oh-my-zsh" || \
+    git clone git@github.com:ohmyzsh/ohmyzsh.git "${HOME}/.oh-my-zsh"
 fi
 
-if [ ! -d "$HOME/.asdf" ]; then
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+# Install ASDF
+if [[ ! -d "${HOME}/.asdf" ]]; then
+  echo "==> Installing ASDF..."
+  git clone https://github.com/asdf-vm/asdf.git "${HOME}/.asdf"
 fi
 
 add_or_update_asdf_plugin() {
@@ -53,7 +64,8 @@ add_or_update_asdf_plugin() {
   fi
 }
 
-source "$HOME/.asdf/asdf.sh"
+# shellcheck source=/dev/null
+source "${HOME}/.asdf/asdf.sh"
 add_or_update_asdf_plugin "ruby" "https://github.com/asdf-vm/asdf-ruby.git"
 add_or_update_asdf_plugin "nodejs" "https://github.com/asdf-vm/asdf-nodejs.git"
 
@@ -68,9 +80,13 @@ install_asdf_language() {
   fi
 }
 
+echo "==> Installing Ruby via ASDF..."
 install_asdf_language "ruby"
 gem update --system
 number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
 
+echo "==> Installing Node.js via ASDF..."
 install_asdf_language "nodejs"
+
+echo "==> macOS installation complete!"
