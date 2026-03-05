@@ -247,4 +247,7 @@ alias corig='find . -type f -name "*.orig" -delete'
 
 alias porthole=/Users/nate/.dotfiles/porthole
 
-alias ff="ssh -D 2001 ubuntu@REDACTED_HOSTNAME -i ~/.ssh/REDACTED_KEY.pem -vvv"
+# Private aliases (infrastructure details, etc.)
+if [ -f ~/.dotfiles/keys/PRIVATE_ALIASES ]; then
+    source ~/.dotfiles/keys/PRIVATE_ALIASES
+fi

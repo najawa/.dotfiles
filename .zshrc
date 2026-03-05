@@ -92,12 +92,16 @@ if [[ -d "$HOME/claude-time-tracker" ]]; then
     source "$CTT_SCRIPT_DIR/shell-hooks.sh"
 fi
 
-# ── Extension Goldrush morning check ──────────────
+# ── Private project morning checks ──────────────
+if [ -f ~/.dotfiles/keys/PRIVATE_PROJECTS ]; then
+    source ~/.dotfiles/keys/PRIVATE_PROJECTS
+fi
+
 _goldrush_morning() {
   local today=$(date +%Y-%m-%d)
   local stamp_file="/tmp/.goldrush-morning-$today"
   [[ -f "$stamp_file" ]] && return
-  [[ -d "$HOME/Development/repositories/REDACTED/REDACTED_PROJECT" ]] || return
+  [[ -z "$GOLDRUSH_PROJECT" || ! -d "$GOLDRUSH_PROJECT" ]] && return
   touch "$stamp_file"
   echo ""
   echo "  Good morning!"
@@ -110,8 +114,8 @@ _goldrush_morning() {
 }
 
 gmorning() {
-  local project="$HOME/Development/repositories/REDACTED/REDACTED_PROJECT"
-  pushd -q "$project"
+  [[ -z "$GOLDRUSH_PROJECT" || ! -d "$GOLDRUSH_PROJECT" ]] && return
+  pushd -q "$GOLDRUSH_PROJECT"
   node tools/submissions.mjs dashboard
   node tools/submissions.mjs queue
   echo ""

@@ -7,10 +7,10 @@ it2_clear_badge() { printf '\033]1337;SetBadge=\007'; }
 zmodload zsh/datetime
 
 # Map profiles to accounts for instant, zero-process resolution
-typeset -gA _AWS_PROFILE_TO_ACCT=(
-  tj  REDACTED_AWS_ACCT_1
-  ffs REDACTED_AWS_ACCT_2
-)
+# Account mappings loaded from keys/AWS_ACCOUNTS (gitignored)
+typeset -gA _AWS_PROFILE_TO_ACCT=()
+typeset -gA _AWS_ACCT_TO_ITERM=()
+[[ -f ~/.dotfiles/keys/AWS_ACCOUNTS ]] && source ~/.dotfiles/keys/AWS_ACCOUNTS
 
 typeset -g _IT2_CUR_PROFILE=""
 
@@ -32,12 +32,10 @@ _resolve_account_sts() {
 
 _apply_from_acct() {
   local acct="$1" profile="Default" badge=""
-  case "$acct" in
-    REDACTED_AWS_ACCT_1) profile="AWS-TJ";  badge="AWS REDACTED_AWS_ACCT_1" ;;
-    REDACTED_AWS_ACCT_2) profile="AWS-FFS"; badge="AWS REDACTED_AWS_ACCT_2" ;;
-    REDACTED_AWS_ACCT_3) profile="AWS-BF"; badge="AWS REDACTED_AWS_ACCT_3" ;;
-    *)            profile="Default"; badge="" ;;
-  esac
+  if [[ -n "${_AWS_ACCT_TO_ITERM[$acct]}" ]]; then
+    profile="${_AWS_ACCT_TO_ITERM[$acct]%%|*}"
+    badge="${_AWS_ACCT_TO_ITERM[$acct]#*|}"
+  fi
   if [[ "${ITERM_PROFILE:-$_IT2_CUR_PROFILE}" != "$profile" ]]; then
     it2_set_profile "$profile"
     [[ -n "$badge" ]] && it2_set_badge "$badge" || it2_clear_badge
