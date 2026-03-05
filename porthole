@@ -1,0 +1,22 @@
+PORT=$1
+# Get the host PID (Process ID) using the port
+PID=$(lsof -t -i :$PORT)
+
+if [ -z "$PID" ]; then
+    echo "No process found using port $PORT."
+    exit 1
+fi
+
+# Get the container ID from the process cgroup
+CONTAINER_ID=$(cat /proc/$PID/cgroup | grep -oE '[a-f0-9]{64}' | head -n 1)
+
+if [ -n "$CONTAINER_ID" ]; then
+    # Get the human-readable container name
+    CONTAINER_NAME=$(docker inspect --format '{{.Name}}' "$CONTAINER_ID" | sed 's/^\///')
+    echo "Process (PID $PID) is running inside Container: $CONTAINER_NAME (ID: ${CONTAINER_ID:0:12})"
+else
+    # Fallback to standard process info if not in a container
+    COMMAND_PATH=$(ps -p $PID -o comm=)
+    echo "Process $COMMAND_PATH (PID $PID) is running on the host (not in a container)."
+fi
+

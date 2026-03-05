@@ -35,6 +35,7 @@ _apply_from_acct() {
   case "$acct" in
     REDACTED_AWS_ACCT_1) profile="AWS-TJ";  badge="AWS REDACTED_AWS_ACCT_1" ;;
     REDACTED_AWS_ACCT_2) profile="AWS-FFS"; badge="AWS REDACTED_AWS_ACCT_2" ;;
+    REDACTED_AWS_ACCT_3) profile="AWS-BF"; badge="AWS REDACTED_AWS_ACCT_3" ;;
     *)            profile="Default"; badge="" ;;
   esac
   if [[ "${ITERM_PROFILE:-$_IT2_CUR_PROFILE}" != "$profile" ]]; then

@@ -1,5 +1,5 @@
 ##########################################
-#### NATHANIEL WADDELL ~ Bash Profile ####
+#### NATHANIEL WADDELL ~ ZSH Aliases  ####
 ##########################################
 
 export AWS_THEME_ENABLE_STS=1
@@ -12,7 +12,7 @@ export CLICOLOR=1
 export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 
 ## Use a long listing format ##
-alias ll='ls -la'
+alias ll='ls -AFho'
 
 ## Show hidden files ##
 alias l.='ls -d .*'
@@ -26,7 +26,7 @@ alias cd..='cd ..'
 alias ..='cd ..'
 alias ...='cd ../../../'
 alias ....='cd ../../../../'
-alias .....='cd ../../../../'
+alias .....='cd ../../../../..'
 alias .4='cd ../../../../'
 alias .5='cd ../../../../..'
 
@@ -48,41 +48,30 @@ alias mount='mount |column -t'
 alias his='history'
 alias j='jobs -l'
 
-if [ -n "$BASH_VERSION" ]; then
-    # Rainbow _Bash_ Profile
-    export PS1="\[$(tput bold)\]\[$(tput setaf 1)\][\[$(tput setaf 3)\]\u\[$(tput setaf 2)\]@\[$(tput setaf 4)\]\h \[$(tput setaf 5)\]\W\[$(tput setaf 1)\]]\[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"
-fi
-
 ### Functions
-# Run any command after (log), and it will save it to a text file, and open the file on completion
-log() {
-    "$@" > log.txt; sublime log.txt
-}
-alias log=log
-
 # Copy the output of the following command to the clipboard
-copy() {
+scopy() {
     "$@" | tr -d '\n' | pbcopy;
     echo $("$@")
 }
-alias copy=copy
 
 alias ip="ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2"
 
 function whereis() {
-  curl -s http://api.db-ip.com/v2/free/$1 | python -m json.tool
+  curl -s http://api.db-ip.com/v2/free/$1 | python3 -m json.tool
 }
-#Path copy - escapes spaces
-pwc() {
+
+# Path copy - escapes spaces, copies to clipboard
+spwc() {
      printf "%q\n" "$(pwd)" | tr -d '\n'  | pbcopy
     command=$( pbpaste)
     output='Copied: "';
     output2='" to the clipboard!'
     echo "$output $command $output2";
 }
-alias pwc=pwc
 
-#Ping until host is up, then ssh
+# Ping until host is up, then ssh
+unalias wssh 2>/dev/null
 wssh() {
     local target="$1"
     local address
@@ -119,6 +108,7 @@ wssh() {
 alias wssh=wssh
 
 # Rip emails from a website
+unalias erip 2>/dev/null
 erip() {
     echo "Ripping emails from $1"
     curl -sb -H $1 | grep -i -o "[A-Z0-9._%+-]\+@[A-Z0-9.-]\+\.[A-Z]\{2,4\}"
@@ -129,7 +119,7 @@ alias erip=erip
 if [ $UID -ne 0 ]; then
     alias shutdown='sudo shutdown now'
     alias reboot='sudo reboot'
-    alias update='sudo homebrew update'
+    alias update='brew update && brew upgrade'
 fi
 
 # This can be done easier with a shortcut: cmd+shift+.
@@ -143,28 +133,22 @@ alias now='date +"%T"'
 alias nowtime=now
 # Get full date
 alias nowdate='date +"%d-%m-%Y"'
-# Show open ports
-alias ports='netstat -tulanp'
+# Show open ports (macOS)
+alias ports='lsof -i -P -n | grep LISTEN'
 # Resume wget by default
 alias wget='wget -c'
 # Standardize Disk Usage Output
 alias df='df -H'
-# Easy rewriting of the ~/.bash_profile
-alias bashrebuild='truncate -s 0 ~/.bash_profile;nano ~/.bash_profile;source ~/.bash_profile'
-alias prettyjson='python -m json.tool'
+alias prettyjson='python3 -m json.tool'
 # Open chrome from the command line
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 
-alias starwars="telnet towel.blinkenlights.nl"
 alias h="ping 8.8.8.8"
 
 # Unix
-alias ll="ls -al"
 alias ln="ln -v"
-alias mkdir="mkdir -p"
 alias e="$EDITOR"
 alias v="$VISUAL"
-alias c="clear"
 
 # Git-related
 alias g="git"
@@ -188,10 +172,6 @@ alias gfr='git fetch origin && git rebase -i origin/main'
 # Install Ruby based on current Ruby version
 alias air='asdf install ruby "`cat .ruby-version`"'
 
-# easy copy pasta
-alias copy='xclip -selection c'
-alias paste='xclip -out -selection c'
-
 # easy grepsedawk things
 getcol() {
   num=$(expr $1 + 0)
@@ -214,7 +194,9 @@ alias a="alias | fzf"
 
 [ -f ~/.dotfiles/.octanecoffeerc ] && source ~/.dotfiles/.octanecoffeerc
 
-eval $(thefuck --alias qwer)
+if command -v thefuck &>/dev/null; then
+    eval $(thefuck --alias qwer)
+fi
 
 # Add pyenv shims to brew to supress homebrew errors
 alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
@@ -223,13 +205,23 @@ alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
 alias gcf="git diff-tree --no-commit-id --name-only $1"
 
 # GitLab Token
-if [ -d ~/.dotfiles/keys/GITLAB_TOKEN ]; then
+if [ -f ~/.dotfiles/keys/GITLAB_TOKEN ]; then
     source ~/.dotfiles/keys/GITLAB_TOKEN
 fi
 
 # GitHub Token
-if [ -d ~/.dotfiles/keys/GITHUB_TOKEN ]; then
+if [ -f ~/.dotfiles/keys/GITHUB_TOKEN ]; then
     source ~/.dotfiles/keys/GITHUB_TOKEN
+fi
+
+# Digital Ocean Token
+if [ -f ~/.dotfiles/keys/DIGITAL_OCEAN_TOKEN ]; then
+    source ~/.dotfiles/keys/DIGITAL_OCEAN_TOKEN
+fi
+
+# Hetzner Token
+if [ -f ~/.dotfiles/keys/HETZNER_TOKEN ]; then
+    source ~/.dotfiles/keys/HETZNER_TOKEN
 fi
 
 # AWS Switcher
@@ -237,13 +229,22 @@ if [ -f ~/.dotfiles/keys/AWS_SWITCHER ]; then
     source ~/.dotfiles/keys/AWS_SWITCHER
 fi
 
+# SuperOps Token
+if [ -f ~/.dotfiles/keys/SUPEROPS_TOKEN ]; then
+    source ~/.dotfiles/keys/SUPEROPS_TOKEN
+fi
+
 uptime | awk '{print "Uptime: "$3" "$4" "$5}'
 LOCAL_IP=$(osascript -e "IPv4 address of (system info)")
 echo $LOCAL_IP
-cat ~/.dotfiles/motd/techjoy-motd.sh | lolcat
+if command -v lolcat &>/dev/null; then
+    cat ~/.dotfiles/motd/techjoy-motd.sh | lolcat
+else
+    cat ~/.dotfiles/motd/techjoy-motd.sh
+fi
 
 alias corig='find . -type f -name "*.orig" -delete'
 
-fc() {
-  grep "$1" ~/.zsh_history
-}
+alias porthole=/Users/nate/.dotfiles/porthole
+
+alias ff="ssh -D 2001 ubuntu@REDACTED_HOSTNAME -i ~/.ssh/REDACTED_KEY.pem -vvv"

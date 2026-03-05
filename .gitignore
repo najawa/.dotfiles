@@ -4,3 +4,4 @@
 !.config/nvim/pack/
 keys/*
 !keys/.gitkeep
+claude/hooks/node_modules/

@@ -45,33 +45,84 @@ eval "$(pyenv init -)"
 # Created by `pipx` on 2024-02-27 18:23:19
 export PATH="$PATH:~/.local/bin"
 
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
+# Herd PHP configuration
 [[ -f "/Applications/Herd.app/Contents/Resources/config/shell/zshrc.zsh" ]] && builtin source "/Applications/Herd.app/Contents/Resources/config/shell/zshrc.zsh"
+if [[ -d ~/Library/Application\ Support/Herd/config/php/83 ]]; then
+    export HERD_PHP_83_INI_SCAN_DIR="~/Library/Application Support/Herd/config/php/83/"
+fi
+if [[ -d ~/Library/Application\ Support/Herd/bin ]]; then
+    export PATH="~/Library/Application Support/Herd/bin/":$PATH
+fi
 
-# Herd injected PHP 8.3 configuration.
-export HERD_PHP_83_INI_SCAN_DIR="~/Library/Application Support/Herd/config/php/83/"
-
-
-# Herd injected PHP binary.
-export PATH="~/Library/Application Support/Herd/bin/":$PATH
-
-
-# Load Angular CLI autocompletion.
-source <(ng completion script)
-
-export FZF_BASE=/path/to/fzf/install/dir
+# Load Angular CLI autocompletion
+if command -v ng &>/dev/null; then
+    source <(ng completion script)
+fi
 
 ### Go environment ###########################################################
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
 export PATH="$PATH:/opt/homebrew/opt/go/libexec/bin:$GOBIN"
 ### End Go environment #######################################################
-export PATH="/Users/nate/.config/herd-lite/bin:$PATH"
-export PHP_INI_SCAN_DIR="/Users/nate/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+
+if [[ -d /Users/nate/.config/herd-lite/bin ]]; then
+    export PATH="/Users/nate/.config/herd-lite/bin:$PATH"
+    export PHP_INI_SCAN_DIR="/Users/nate/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+fi
 
 export DOCKER_BUILDKIT=1
 
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+# Default command uses the standard ~/.claude directory
+claude() {
+  CLAUDE_CONFIG_DIR="$HOME/.claude" /opt/homebrew/bin/claude "$@"
+}
+claude-secondary() {
+  CLAUDE_CONFIG_DIR="$HOME/.claude-secondary-config" /opt/homebrew/bin/claude "$@"
+}
+
+# Claude time tracker
+if [[ -d "$HOME/claude-time-tracker" ]]; then
+    export CTT_SCRIPT_DIR="$HOME/claude-time-tracker"
+    source "$CTT_SCRIPT_DIR/shell-hooks.sh"
+fi
+
+# ── Extension Goldrush morning check ──────────────
+_goldrush_morning() {
+  local today=$(date +%Y-%m-%d)
+  local stamp_file="/tmp/.goldrush-morning-$today"
+  [[ -f "$stamp_file" ]] && return
+  [[ -d "$HOME/Development/repositories/REDACTED/REDACTED_PROJECT" ]] || return
+  touch "$stamp_file"
+  echo ""
+  echo "  Good morning!"
+  echo ""
+  echo -n "  Perform morning maintenance tasks? (y/n) "
+  read -r reply
+  if [[ "$reply" =~ ^[Yy] ]]; then
+    gmorning
+  fi
+}
+
+gmorning() {
+  local project="$HOME/Development/repositories/REDACTED/REDACTED_PROJECT"
+  pushd -q "$project"
+  node tools/submissions.mjs dashboard
+  node tools/submissions.mjs queue
+  echo ""
+  echo -n "  Browse extension checklists? (y/n) "
+  read -r reply
+  if [[ "$reply" =~ ^[Yy] ]]; then
+    node tools/submissions.mjs checklist
+  fi
+  popd -q
+}
+
+_goldrush_morning
+
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
