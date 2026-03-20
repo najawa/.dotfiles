@@ -49,6 +49,7 @@ done
 # Config files (different per instance)
 echo "[config]"
 link_item "$DOTFILES_CLAUDE/config/CLAUDE.md" "$PRIMARY/CLAUDE.md"
+link_item "$DOTFILES_CLAUDE/config/CLAUDE.md" "$SECONDARY/CLAUDE.md"
 link_item "$DOTFILES_CLAUDE/config/settings-primary.json" "$PRIMARY/settings.json"
 link_item "$DOTFILES_CLAUDE/config/settings-secondary.json" "$SECONDARY/settings.json"
 echo ""
