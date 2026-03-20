@@ -219,6 +219,11 @@ if [ -f ~/.dotfiles/keys/DIGITAL_OCEAN_TOKEN ]; then
     source ~/.dotfiles/keys/DIGITAL_OCEAN_TOKEN
 fi
 
+# Jira API Token
+if [ -f ~/.dotfiles/keys/JIRA_API_TOKEN ]; then
+    source ~/.dotfiles/keys/JIRA_API_TOKEN
+fi
+
 # Hetzner Token
 if [ -f ~/.dotfiles/keys/HETZNER_TOKEN ]; then
     source ~/.dotfiles/keys/HETZNER_TOKEN

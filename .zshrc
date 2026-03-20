@@ -130,3 +130,4 @@ gmorning() {
 _goldrush_morning
 
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
