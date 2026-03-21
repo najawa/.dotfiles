@@ -5,3 +5,4 @@
 keys/*
 !keys/.gitkeep
 claude/hooks/node_modules/
+.claude/
